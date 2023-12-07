@@ -140,6 +140,7 @@ void loop() {
   delay(1000);
   while (true) {
     sensorRead();
+    
     PID_control();
   }
 }
