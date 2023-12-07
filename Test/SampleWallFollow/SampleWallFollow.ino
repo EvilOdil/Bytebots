@@ -370,11 +370,13 @@ void loop() {
 
     sensorRead();
     read_dual_sensors();
-    if(sensor3 < 100){
+    if(sensor2 < 170){
       TurnRight(150);
+      goForward(300)
     }
-    else if(sensor2 < 100){
+    else if(sensor3 < 170){
       TurnLeft(150);
+      goForward(300)
     }
     else{
       PID_control();
