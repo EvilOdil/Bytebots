@@ -17,6 +17,10 @@ double position = 0;
 double P, I, D, PID, PreErr = 0;
 double offset = 3;
 
+float wallposition = 0;
+float finalwallposition =0;
+
+
 double motorSpeedA;
 double motorSpeedB;
 double baseSpeed = 70;
@@ -126,6 +130,26 @@ void setID() {
 
 
 
+}
+
+int wallsensorRead() {
+  // Adjust these values based on your setup and requirements
+  int wallDistance = 200; // Distance to the wall for smooth following
+
+    if (sensor2 < wallDistance) {
+      wallposition = -(wallDistance-sensor2); // Adjust this value as needed
+    } else if (sensor3 < wallDistance) {
+      wallposition = wallDistance-sensor3; // Adjust this value as needed
+    }else{
+      wallposition=0;
+    }
+
+  finalwallposition = (wallposition / 10.0); // Convert to meters
+  
+  delay(50);
+  Serial.print(sensor2);
+  Serial.print(" ");
+  Serial.println(sensor3);
 }
 
 void read_dual_sensors() {
@@ -431,16 +455,12 @@ void loop() {
   
 
 else if(wallFollow){
-  if(sensor2<200){
-      TurnRight(200);
-      goForward(200);
-      
-    }
-    else if(sensor3<200){
-      TurnLeft(200);
-      goForward(200);
-    }
-}
+ wallsensorRead();
+
+    if(abs(finalwallposition)>1){
+      position=finalwallposition;
+      PID_control();
+}}
 else{
   stop();
 }
