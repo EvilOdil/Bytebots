@@ -1,15 +1,15 @@
 #include <AccelStepper.h>
 //stepper motor pins
 #define motorPin1  48      // IN1
-#define motorPin2  49      // IN2
-#define motorPin3  50     // IN3
-#define motorPin4  51    // IN4 
+#define motorPin2  47      // IN2 //49
+#define motorPin3  49     // IN3 //50
+#define motorPin4  50    // IN4 //51
 #define MotorInterfaceType 4
 AccelStepper stepper = AccelStepper(MotorInterfaceType, motorPin1, motorPin3, motorPin2, motorPin4);
 
 void lift(){
   stepper.setCurrentPosition(0);
-    while (stepper.currentPosition() != -700) { 
+    while (stepper.currentPosition() != -2000) { 
       stepper.setSpeed(-500);
       stepper.runSpeed();
   }
@@ -18,7 +18,7 @@ void lift(){
 
 void drop(){
 stepper.setCurrentPosition(0);
-    while (stepper.currentPosition() != 700) { 
+    while (stepper.currentPosition() != 3000) { 
       stepper.setSpeed(500);
       stepper.runSpeed();
   }
@@ -50,16 +50,16 @@ void setup() {
   stepper.setCurrentPosition(0); //set current pos to 0
   // put your setup code here, to run once:
   delay(1000);
-  liftOneBoxHeight();
-  delay(1000);
-  liftOneBoxHeight();
+  
+  lift();
+  drop();
+ 
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-   liftTwoBoxHeight();
-   delay(1000);
+ 
   
   
 
