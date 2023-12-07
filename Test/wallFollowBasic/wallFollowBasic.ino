@@ -34,6 +34,8 @@ int in4 = 8;//7
 int M2 = 17;
 
 bool linefollow=true;
+bool wallFollow=false;
+bool lineFollow=true;
 
 // connect motor controller pins to Arduino digital pins
 // motor one
@@ -368,22 +370,33 @@ void stop(){
 
 void loop() {
 
-  delay(2000);
-  while (true) {
+  sensorRead();
+  read_dual_sensors();
+
+  if (sensor2<150 || sensor3<150){ 
+    lineFollow=false;
+    wallFollow = true;
+  }
+  else{
+
+    lineFollow=true;
+    wallFollow = false;
+  }
+  if(lineFollow){
+  
     sensorRead();
-    read_dual_sensors();
+    
 
     if(dVal[0] == 1 && dVal[1] == 1 && dVal[2] == 1 && dVal[3] == 1 && dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 && dVal[12] == 1 && dVal[13] == 1 && dVal[14] == 1 && dVal[15] == 1){
       goForward(200);
       delay(500);
       sensorRead();
       
-      
       if(dVal[0] == 1 && dVal[1] == 1 && dVal[2] == 1 && dVal[3] == 1 && dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 && dVal[12] == 1 && dVal[13] == 1 && dVal[14] == 1 && dVal[15] == 1){
         stop();
         delay(4000);
         linefollow=false;
-        break;
+        //break;
       }else{
         TurnLeft(500); // not PID control
       }}
@@ -408,16 +421,7 @@ void loop() {
         PID_control;
       }}
     } 
-    else if(sensor2<150){
-      TurnRight(200);
-      goForward(200);
-      PID_control();
-    }
-    else if(sensor3<150){
-      TurnLeft(200);
-      goForward(200);
-      PID_control();
-    }
+  
     
     else{
       PID_control();
@@ -425,4 +429,19 @@ void loop() {
     delay(20);
   }
   
+
+else if(wallFollow){
+  if(sensor2<150){
+      TurnRight(200);
+      goForward(200);
+      
+    }
+    else if(sensor3<150){
+      TurnLeft(200);
+      goForward(200);
+    }
+}
+else{
+  stop();
+}
 }
