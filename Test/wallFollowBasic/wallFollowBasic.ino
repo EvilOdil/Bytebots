@@ -35,6 +35,8 @@ int M2 = 17;
 
 bool linefollow=true;
 
+// connect motor controller pins to Arduino digital pins
+// motor one
 #include "Adafruit_VL53L0X.h"
 
 // address we will assign if dual sensor is present
@@ -174,6 +176,7 @@ void read_dual_sensors() {
 
   Serial.println();
 }
+
 
 
 void setup()
@@ -362,26 +365,64 @@ void stop(){
 
 }
 
+
 void loop() {
 
-  delay(1000);
-  if (linefollow=true){
+  delay(2000);
   while (true) {
-
     sensorRead();
     read_dual_sensors();
-    if(sensor2 < 100){
-      TurnRight(150);
-      goForward(300);
+
+    if(dVal[0] == 1 && dVal[1] == 1 && dVal[2] == 1 && dVal[3] == 1 && dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 && dVal[12] == 1 && dVal[13] == 1 && dVal[14] == 1 && dVal[15] == 1){
+      goForward(200);
+      delay(500);
+      sensorRead();
+      
+      
+      if(dVal[0] == 1 && dVal[1] == 1 && dVal[2] == 1 && dVal[3] == 1 && dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 && dVal[12] == 1 && dVal[13] == 1 && dVal[14] == 1 && dVal[15] == 1){
+        stop();
+        delay(4000);
+        linefollow=false;
+        break;
+      }else{
+        TurnLeft(500); // not PID control
+      }}
+    else if (dVal[0] == 1 && dVal[1] == 1 && dVal[2] == 1 && dVal[3] == 1 && dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1){ 
+      goForward(200);  //Turn Right
+      TurnRight(500);
     }
-    else if(sensor3 < 100){
-      TurnLeft(150);
-      goForward(300);
+
+    else if (dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 && dVal[12] == 1&& dVal[13] == 1 && dVal[14] == 1 && dVal[15] == 1){
+      goForward(200);  //Turn Left
+      TurnLeft(500);
+
     }
-    else{
+    
+    else if(dVal[0] == 0 && dVal[1] == 0 && dVal[2] == 0 && dVal[3] == 0 && dVal[4] == 0 && dVal[5] == 0 && dVal[6] == 0 && dVal[7] == 0 && dVal[8] == 0 && dVal[9] == 0 && dVal[10] == 0 && dVal[11] == 0 && dVal[12] == 0 && dVal[13] == 0 && dVal[14] == 0 && dVal[15] == 0){
+      TurnRight(400);//400
+      if(dVal[0] == 1 || dVal[1] == 1 || dVal[2] == 1 || dVal[3] == 1 || dVal[4] == 1 || dVal[5] == 1 || dVal[6] == 1 || dVal[7] == 1 || dVal[8] == 1 || dVal[9] == 1 || dVal[10] == 1 || dVal[11] == 1 || dVal[12] == 1 ||dVal[13] == 1 || dVal[14] == 1 || dVal[15] == 1){
+        PID_control;
+      }else{
+      TurnLeft(800);//800
+      if(dVal[0] == 1 || dVal[1] == 1 || dVal[2] == 1 || dVal[3] == 1 || dVal[4] == 1 || dVal[5] == 1 || dVal[6] == 1 || dVal[7] == 1 || dVal[8] == 1 || dVal[9] == 1 || dVal[10] == 1 || dVal[11] == 1 || dVal[12] == 1 ||  dVal[13] == 1 || dVal[14] == 1 || dVal[15] == 1){
+        PID_control;
+      }}
+    } 
+    else if(sensor2<150){
+      TurnRight(200);
+      goForward(200);
+      PID_control();
+    }
+    else if(sensor3<150){
+      TurnLeft(200);
+      goForward(200);
       PID_control();
     }
     
+    else{
+      PID_control();
+    }
+    delay(20);
   }
-}
+  
 }
