@@ -20,7 +20,7 @@ QTRSensors qtr;
 #define LOX3_ADDRESS 0x32
 
 
-int sensor3, sensor2, Sensor3,Sensor2;
+int sensor3, sensor2, sensor1,Sensor2;
 
 
 // set the pins to shutdown
@@ -68,9 +68,9 @@ double offset = 3;
 
 double motorSpeedA;
 double motorSpeedB;
-double baseSpeed = 140;
-double Kp = 5.8; //1.1 //5.8
-double Kd = 7.4;
+double baseSpeed = 80;
+double Kp = 1.1; //1.1 //5.8
+double Kd = 1.4;
 
 
 double wallPosition = 0;
@@ -186,6 +186,26 @@ int read_sensor3() {
 
   return sensor3;
 }
+
+int read_sensor1() {
+
+  lox1.rangingTest(&measure1, false);  // pass in 'true' to get debug data printout!
+  lox2.rangingTest(&measure2, false);
+  lox3.rangingTest(&measure3, false);
+
+
+  if (measure1.RangeStatus != 4) {
+    sensor1 = measure1.RangeMilliMeter;
+    //Serial.print(sensor3);
+    //Serial.print("mm");
+  } else {
+    sensor1=200;
+  }
+
+
+  return sensor1;
+}
+
 
 
 
@@ -336,50 +356,58 @@ void PID_control() {
 }
 
 void Wall_Avoid(){
-  int rightDist = read_sensor3();
-  int leftDist = read_sensor2();
-  if (rightDist < NO_RWF_DIST) {
-    linefollow = false;
+  int frontDist=read_sensor1();
+      linefollow =true;
+    wallfollow = false;
+  if (frontDist<180){
+    linefollow =false;
+    wallfollow = true;
+    wallcount=wallcount+1;
+    if(wallcount==2){
+      linefollow = false;
     //while (rightDist < RWF_LIMIT){
       wallfollow = true;
-      TurnLeft(500);
+      TurnLeft(450);
     //  rightDist = read_sensor3();
     //}
     sensorRead();
-    while ( dVal[4] == 0 && dVal[5] == 0 && dVal[6] == 0 && dVal[7] == 0 && dVal[8] == 0 && dVal[9] == 0 && dVal[10] == 0 && dVal[11] == 0  ){
+    while (dVal[10] == 0 && dVal[11] == 0  && dVal[4] == 0 && dVal[5] == 0 && dVal[6] == 0 && dVal[7] == 0 && dVal[8] == 0 && dVal[9] == 0){
       goForward(100);
       sensorRead();
-      
-    
-  
     }
-    TurnLeft(500);    
+    //delay(300);
+    goForward(500);
+    TurnLeft(400); 
     linefollow =true;
     wallfollow = false;
 
-  }
-
-  else if (leftDist < NO_LWF_DIST){
-    linefollow = false;
+    }else if(wallcount==3){
+       linefollow = false;
     //while (leftDist < LWF_LIMIT){
       wallfollow = true;
-      TurnRight(500);
+      TurnRight(450);
      // leftDist = read_sensor2();
    // }
    sensorRead();
     while ( dVal[4] == 0 && dVal[5] == 0 && dVal[6] == 0 && dVal[7] == 0 && dVal[8] == 0 && dVal[9] == 0 && dVal[10] == 0 && dVal[11] == 0 ){
       goForward(100);
       sensorRead();
+
       
     
     }
+    stop();
+    delay(400);
     linefollow = true;
     wallfollow = false;
-    TurnRight(500);
-  }
-      
+    TurnRight(600);
+
+    }
+  }    
   
 }
+      
+  
 
 void Wall_PID_control() {
 
@@ -494,13 +522,13 @@ void LineFollow(){
    // while (true) {
 
     sensorRead();
-    if(dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 ){
+    if(dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1){
       goForward(200);
-      delay(500);
+      //delay(500);
       sensorRead();
       
       
-      if(dVal[4] == 1 && dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1 && dVal[11] == 1 ){
+      if( dVal[5] == 1 && dVal[6] == 1 && dVal[7] == 1 && dVal[8] == 1 && dVal[9] == 1 && dVal[10] == 1){
         //stop();
         //delay(4000);
         WhiteBox = WhiteBox + 1;
@@ -615,6 +643,9 @@ display_text(String(WhiteBox), 0, 10);
   else if(WhiteBox == 1){
     if(Start_2 == 0){
       goForward(500);
+      linefollow=true;
+      wallfollow=false;
+
       Start_2 =1;
     }
   
