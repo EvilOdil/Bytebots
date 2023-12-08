@@ -168,8 +168,7 @@ void GuardLidar(){
 
   }
   
-Serial.print('is guard infront');
-Serial.print(guardFront);  
+Serial.println('Exit from guard bot detection - Lidar');
 }
 
 
