@@ -51,7 +51,7 @@ void setup() {
   // put your setup code here, to run once:
   delay(1000);
   
-  lift();
+  
   drop();
  
 

@@ -1,5 +1,7 @@
+
 // connect motor controller pins to Arduino digital pins
 // motor one
+#include <AccelStepper.h>
 #include "Adafruit_VL53L0X.h"
 #include <QTRSensors.h>
 #include <Wire.h>
@@ -18,6 +20,7 @@ QTRSensors qtr;
 #define LOX1_ADDRESS 0x30
 #define LOX2_ADDRESS 0x31
 #define LOX3_ADDRESS 0x32
+
 
 
 int sensor3, sensor2, sensor1,Sensor2;
@@ -44,9 +47,18 @@ VL53L0X_RangingMeasurementData_t measure2;
 VL53L0X_RangingMeasurementData_t measure3;
 
 
+#define motorPin1  48      // IN1
+#define motorPin2  47      // IN2 //49
+#define motorPin3  49     // IN3 //50
+#define motorPin4  50    // IN4 //51
+#define MotorInterfaceType 4
+AccelStepper stepper = AccelStepper(MotorInterfaceType, motorPin1, motorPin3, motorPin2, motorPin4);
+
+
 int WhiteBox = 0;
 int Start_1 = 0;
 int Start_2 = 0;
+int Start_3 = 0;
 
 
 //[-60,-52,-44,-36,-28,-20,-12,-4,4,12,20,28,36,44,52,60]
@@ -232,6 +244,24 @@ void printWallSensors(){
   
 }
 
+void lift(){
+  stepper.setCurrentPosition(0);
+    while (stepper.currentPosition() != -2000) { 
+      stepper.setSpeed(-500);
+      stepper.runSpeed();
+  }
+
+}
+
+void drop(){
+stepper.setCurrentPosition(0);
+    while (stepper.currentPosition() != 3000) { 
+      stepper.setSpeed(500);
+      stepper.runSpeed();
+  }
+
+}
+
 
 void setup()
 
@@ -250,6 +280,10 @@ void setup()
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
   
+  stepper.setMaxSpeed(1000);
+  stepper.setCurrentPosition(0); //set current pos to 0
+
+
   qtr.setTypeRC();
   qtr.setSensorPins((const uint8_t[]){ 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46 }, SensorCount);
   qtr.setEmitterPin(2);
@@ -372,7 +406,6 @@ void Wall_Avoid(){
       TurnLeft(450);
     //  rightDist = read_sensor3();
     //}
-    goForward(100);
     sensorRead();
     while (dVal[10] == 0 && dVal[11] == 0  && dVal[4] == 0 && dVal[5] == 0 && dVal[6] == 0 && dVal[7] == 0 && dVal[8] == 0 && dVal[9] == 0){
       goForward(100);
@@ -389,7 +422,6 @@ void Wall_Avoid(){
     //while (leftDist < LWF_LIMIT){
       wallfollow = true;
       TurnRight(450);
-      goForward(100);
      // leftDist = read_sensor2();
    // }
    sensorRead();
@@ -477,6 +509,25 @@ void goForward(double forward_delay) {
   delay(forward_delay);
   // now change motor directions
 }
+
+void rush(double forward_delay) {
+  // this function will run the motors in
+  //both directions at a fixed speed
+  // turn on motor A
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  // set speed to 200 out of possible range 0~255
+  analogWrite(enA, 180 + offset);
+  // turn on motor B
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  // set speed to 200 out of possible range 0~255
+  analogWrite(enB, 180 - offset);
+  delay(forward_delay);
+  // now change motor directions
+}
+
+
 
 void TurnRight(double turn_delay){
   digitalWrite(in1, HIGH);
@@ -652,6 +703,8 @@ display_text(String(WhiteBox), 0, 10);
 
       Start_2 =1;
     }
+
+    if(wallcount<3){
   
     Wall_Avoid();
     Serial.print(linefollow);
@@ -659,6 +712,27 @@ display_text(String(WhiteBox), 0, 10);
     if(linefollow==true && wallfollow==false){
     Wall_LineFollow();
     }
+    }
+    else{
+      LineFollow();
+    }
+  }
+
+  else if(WhiteBox  == 2){
+    if(Start_3 == 0){
+      goForward(800);
+      TurnRight(700);
+      lift();
+      //goForward(300);
+      rush(5000);
+      Start_3 == 1;
+     
+    }
+    baseSpeed = 200;
+    Kp = 5.8;
+    Kd = 7.5;
+    LineFollow();
+
   }
   
 

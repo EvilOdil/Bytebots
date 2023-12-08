@@ -15,13 +15,13 @@ double digital_thres = 500;
 
 double position = 0;
 double P, I, D, PID, PreErr = 0;
-double offset = 3;
+double offset = 4;//3
 
 double motorSpeedA;
 double motorSpeedB;
-double baseSpeed = 70;
-double Kp = 0.7; //1.1
-double Kd = 1.9;
+double baseSpeed = 200;
+double Kp = 5.8; //1.1
+double Kd = 8.2;
 
 int enA = 12;//10
 int in1 = 10;//8
@@ -153,6 +153,23 @@ void goForward(double forward_delay) {
   // now change motor directions
 }
 
+void rush(double forward_delay) {
+  // this function will run the motors in
+  //both directions at a fixed speed
+  // turn on motor A
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  // set speed to 200 out of possible range 0~255
+  analogWrite(enA, 180 + offset);
+  // turn on motor B
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+  // set speed to 200 out of possible range 0~255
+  analogWrite(enB, 180 - offset);
+  delay(forward_delay);
+  // now change motor directions
+}
+
 void TurnRight(double turn_delay){
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -200,6 +217,7 @@ void stop(){
 void loop() {
 
   delay(1000);
+  rush(1000);
   if (linefollow=true){
   while (true) {
 
