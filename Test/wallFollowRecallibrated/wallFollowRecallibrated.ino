@@ -19,9 +19,9 @@ double offset = 3;
 
 double motorSpeedA;
 double motorSpeedB;
-double baseSpeed = 70;
+double baseSpeed = 60;
 double Kp = 0.7; //1.1
-double Kd = 1.9;
+double Kd = 1.1;
 
 int enA = 12;//10
 int in1 = 10;//8
