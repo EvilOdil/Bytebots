@@ -368,6 +368,19 @@ void stop(){
 }
 
 
+void wall(){
+  read_dual_sensors();
+  if(sensor2<200){
+      TurnRight(200);
+      goForward(200);
+      
+    }
+    else if(sensor3<200){
+      TurnLeft(200);
+      goForward(200);
+    }
+}
+
 void loop() {
 
   sensorRead();
@@ -431,15 +444,7 @@ void loop() {
   
 
 else if(wallFollow){
-  if(sensor2<200){
-      TurnRight(200);
-      goForward(200);
-      
-    }
-    else if(sensor3<200){
-      TurnLeft(200);
-      goForward(200);
-    }
+  wall();
 }
 else{
   stop();
