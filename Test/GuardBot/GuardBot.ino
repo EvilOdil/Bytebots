@@ -104,56 +104,70 @@ void read_dual_sensors() {
   Serial.print("1: ");
   if (measure1.RangeStatus != 4) {  // if not out of range
     sensor1 = measure1.RangeMilliMeter;
-    Serial.print(sensor1);
-    Serial.print("mm");
+    //Serial.print(sensor1);
+    //Serial.print("mm");
   } else {
-    Serial.print("Out of range");
+    //Serial.print("Out of range");
   }
 
-  Serial.print(" ");
+  //Serial.print(" ");
 
   // print sensor two reading
-  Serial.print("2: ");
+  //Serial.print("2: ");
   if (measure2.RangeStatus != 4) {
     sensor2 = measure2.RangeMilliMeter;
-    Serial.print(sensor2);
-    Serial.print("mm");
+    //Serial.print(sensor2);
+    //Serial.print("mm");
   } else {
-    Serial.print("Out of range");
+    //Serial.print("Out of range");
   }
 
-  Serial.print(" ");
+  //Serial.print(" ");
 
   // print sensor two reading
-  Serial.print("3: ");
+  //Serial.print("3: ");
   if (measure3.RangeStatus != 4) {
     sensor3 = measure3.RangeMilliMeter;
-    Serial.print(sensor3);
-    Serial.print("mm");
+    //Serial.print(sensor3);
+    //Serial.print("mm");
   } else {
-    Serial.print("Out of range");
+    //Serial.print("Out of range");
   }
 
-  Serial.print(" ");
+  //Serial.print(" ");
 
 
 
-  Serial.print(" ");
+  //Serial.print(" ");
 
 
 
-  Serial.println();
+  //Serial.println();
 }
 
 void GuardLidar(){
+  Serial.print('guard bot lidar started');
   bool guardFront; //is guard bot in the front
   read_dual_sensors();
-  if( sensor1<800 || sensor2<800 || sensor3<800){
-    guardFront = true;
+  while(true){
+    read_dual_sensors();
+    if( sensor1<50 && sensor2<50 && sensor3<50){
+      delay(50);
+    }
+    else if(sensor1<50 && sensor2<50 && sensor3>50){
+      Serial.println('going left'); // free to go
+      break;
+    }
+    else if(sensor1<50 && sensor2>50 && sensor3<50){
+      Serial.println('going right');
+      delay(10000); // wait till guard make next rotation
+    }
+    else{
+      delay(50);
+    }
+
   }
-  else{
-    guardFront = false;
-  }
+  
 Serial.print('is guard infront');
 Serial.print(guardFront);  
 }
@@ -259,7 +273,9 @@ void setup() {
 }
 
 void loop() {
-
+  Serial.println('sdfsfsdf');
+  //delay(1000);
   read_dual_sensors();
-  delay(10);
+
+  //GuardLidar();
 }
